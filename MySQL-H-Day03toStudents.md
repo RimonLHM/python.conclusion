@@ -445,3 +445,5 @@ cd /var/log/
 vim /var/log/syslog        /log 回车 n 下一个  N 上一个
 
 cat /var/log/syslog |grep 'MySQL'|more+
+
+更改
