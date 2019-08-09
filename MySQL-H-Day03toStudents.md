@@ -28,14 +28,18 @@
 - InnoDB		
 
 ```mysql
+ InnoDB             | DEFAULT | Supports transactions, row-level locking, and foreign keys 
 1、支持行级锁
-2、支持外键、事务、事务回滚
+2、支持外键、事务（事件，数据等必须全部完成）、事务回滚（rollback）
 3、表字段和索引同存储在一个文件中
    1、表名.frm ：表结构
    2、表名.ibd : 表记录及索引文件
+
+   哈希算法：安全散列算法
+   密码：char（定长）
 ```
 
-- MyISAM
+- MyISAM(叶子节点存放指针)
 
 ```mysql
 1、支持表级锁
@@ -69,8 +73,10 @@
 1、sudo su
 2、cd /etc/mysql/mysql.conf.d
 3、cp mysqld.cnf mysqld.cnf.bak
-4、vi mysqld.cnf #找到44行左右,加 # 注释
+4、vi/vim mysqld.cnf #找到44行左右,加 # 注释
    #bind-address = 127.0.0.1
+   注：i插入编辑   esc + ：wq 退出  “HJKL” 方向键    :set number 添加行号  ‘o’从光标当前行  换行  并进入插入模式
+         'u' 撤销   ‘3dd’ 删除指定行
    [mysqld]
    character_set_server = utf8
 5、保存退出
@@ -103,6 +109,9 @@ all privileges 、select 、insert ... ...
 1、添加授权用户work,密码123,对所有库的所有表有所有权限
   mysql>grant all privileges on *.* to 'work'@'%' identified by '123' with grant option;
   mysql>flush privileges;
+      注：%  允许所有地址进入指下面localhost可以进行更改
+  mysql -hlocalhost -uwork -p123
+
 2、添加用户duty,对db2库中所有表有所有权限
 ```
 
@@ -125,11 +134,24 @@ all privileges 、select 、insert ... ...
 ```mysql
 1、开启事务
    mysql>begin; # 方法1
+
    mysql>start transaction; # 方法2
 2、开始执行事务中的1条或者n条SQL命令
 3、终止事务
    mysql>commit; # 事务中SQL命令都执行成功,提交到数据库,结束!
+
    mysql>rollback; # 有SQL命令执行失败,回滚到初始状态,结束!
+```
+```
+   pymysql
+
+   try:
+      #操作
+      #操作
+   except：
+      db.rollback()
+   
+   db.commit()
 ```
 
 **==事务四大特性（ACID）==**
@@ -414,3 +436,12 @@ insert into orders values(1,"iphone",5288),(1,"ipad",3299),(2,"iwatch",2222),(2,
 8、增加customers主键限制c_id
   
 ```
+
+课外延伸：cmd
+
+查看系统日志：
+cd /var/log/
+
+vim /var/log/syslog        /log 回车 n 下一个  N 上一个
+
+cat /var/log/syslog |grep 'MySQL'|more+
